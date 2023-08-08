@@ -1,0 +1,11 @@
+// Checks that a boolean variable can take an int/double variable's value
+
+boolean a = true;
+
+void foo() {
+int b = 5;
+a = b;
+double c = 6.4;
+a = c;
+return;
+}

@@ -1,0 +1,11 @@
+// Checks we can return in the middle of the function
+
+void foo () {
+if (true) {
+if (true) {
+return;
+}
+return;
+}
+return;
+}

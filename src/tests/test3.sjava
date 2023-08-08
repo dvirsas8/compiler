@@ -1,0 +1,10 @@
+// Checking that we can handle multiple var decs at once
+
+int a =1, b, c=2;
+
+void foo () {
+a=2;
+b=2;
+c=1;
+return;
+}

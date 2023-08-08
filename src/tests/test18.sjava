@@ -1,0 +1,8 @@
+// Checks that a variable from inner scope with the same name
+// as a final variable from outer scope can be changed
+
+final int a = 6;
+void foo(int a) {
+a=7;
+return;
+}

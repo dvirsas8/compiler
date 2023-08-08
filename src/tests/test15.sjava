@@ -1,0 +1,5 @@
+// Checks we don't accept seperated line
+
+int a
+=
+5;

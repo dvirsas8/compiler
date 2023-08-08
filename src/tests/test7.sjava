@@ -1,0 +1,14 @@
+// Checking that we can handle multiple terms in an if/while statement
+
+void func (boolean flag1, boolean flag2) {
+while (flag2 && flag1 || flag1 && flag2) {
+	if (flag1) {
+		int a = 0;
+	}
+	if (flag2) {
+	int b = 0;
+	}
+}
+	return;
+	
+}

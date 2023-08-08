@@ -1,0 +1,195 @@
+michalwolpert
+dvir.sasson
+
+=============
+Program description
+=============
+symbol_table package-  Data class
+                       SymbolTable class
+                       SymbolTableManager class
+
+                       CompilationEngine class
+                       Initializer class
+compiler package-      SJavaCompiler abstract class
+                       Validator class
+                       SJavaTokenizer class
+                       ValidationException abstract class
+                       IllegalIdentifierException class
+                       UnexpectedStatementException class
+                       ParameterException class
+                       Type enum
+
+validation package-    Validator class
+
+main package-          Sjavac class
+
+=============
+Design
+=============
+* Compiler design -
+We chose to create an abstract class of the whole compiler and add two smaller
+compilers to extend it. One is the initializer and the second is the
+compilation engine.
+This decision was made because both of the classes has a similar purpose
+and common code.
+The initializer makes the first code pass and adds all the static variables and
+methods to the main scope table, while the compilation engine makes the second
+code pass after all the global variables and methods were already introduced.
+We decided to split the compilation in two parts because had we not passed
+through all the methods and global variables before trying to compile the
+entire program, we would have no way to know if a call to a method/ static
+variable that we have yet to see a declaration of is a syntax error or
+they are simply declared after that call (which is legal, since we allow
+global variables and methods to be declared anywhere in the code).
+In this way we were able to split the logic into smaller units but still
+make it useful and convenient.
+Our compiler is highly recursive and is made of a lot of "compileXXX" methods
+that try to process all the needed tokens to write a legitimate sJava code,
+and when it meets an unexpected character or flawed logic, it throws a
+ValidationException which is caught in our main method, and a matching error
+is printed.
+
+* Symbol table, SymbolTableManager and Data-
+We chose to implement a symbol table class and make a symbol table linked list.
+We understood that we want a symbol table from the start.
+A symbol table in our implementation is a facade class of a hashmap, and maps
+between a variable/ method name, and all the info we need to know about it
+,stored in the Data class, such as it's type, whether it's
+final or initialized, etc.
+First, we handled the linked list logic inside of the compiler, and then
+decided that making another facade class for managing the symbol table
+linked list would make our life easier and our code more readable.
+We also considered to replacing design with a memento design.
+After considering the both options, we decided that the linked list represents
+the scope in a better way and can make the code more modular and easy to
+understand.
+In addition, when considering the place complexity we understood that memento
+saves all the given data in a way that a lot of data will be saved several times,
+a problem that the linked list solves.
+
+* SJavaTokenizer
+One of the most important parts in writing a compiler who's main goal is to
+verify the syntax of a program is the way you parse the code.
+We decided that a tokenizer class would be the best choice for us. It advances
+through the code, line by line, and hands the compiler the entire code in
+tokens. That allows our compiler to "expect" the next token. For example,
+lets say we have the following line "void foo()", our tokenizer will parse
+this line as "void", "foo", "(", ")". So as a programmer, I can tell the
+compiler that when it sees the token "void", it knows to expect a legal method
+name, followed by parentheses which may or may not have variable names inside
+them. That allows us to easily and quickly know if the line we have is legal
+or not.
+
+* Validator
+The validator class is made up of static methods, which allow the validation
+of SJava code. It contains the regex code for legal variable and method names,
+and knows what a legal line should look like. Since it's job is to accept tokens
+and return whether or not they are legal, we never have to create an instance
+of it, and use it through it's functions.
+
+=============
+Error handling
+=============
+At first, we created a lot of exception classes, one for every type of syntax
+error that we could find in the code, and didn't connect them.
+We did try not to create too much exceptions classes in order to keep our
+program clean and to also use the displayed messages.
+Afterwards, we understood  that every function can throw 3-4 different
+types of exceptions- which makes the code too complex and very difficult to understand.
+Also, eventually, all the exception are kind of "Validation Exception".
+which means exactly what it's name implies- we tried to validate the given code
+and couldn't for some reason.
+We still wanted to have a few different exceptions and not make it
+a single exception class, and the reason for it is that we thought about
+further uses.
+for example, in order for us to be able to catch some of the exceptions
+and throw others (for the user's convenience).
+These thoughts led us to the design we eventually used. We decided to make an
+abstract class- "Validation Exception" and make the other exceptions extend it.
+In that way we could catch the exception as a validation exception and still have a
+readable and convenient code and the ability to separate between different
+types of exceptions.
+
+The way our program is designed allows us to know exactly what part of the
+code is problematic and why, and to match every one of them with a logical
+message that matches the scenario.
+So, in addition to the different exceptions classes we also send an informative
+messages which specify exactly what exactly went wrong.
+
+=============
+Modulation
+=============
+Our code can be extended to know more types of variables very easily, since
+our tokenizer does not verify the validity of the code, and only separates
+it to tokens, we would only need to add the new type to our "ALLOWED_TYPES"
+array and to our Type enum, and the rest of the code will be able to remain
+exactly the same with no problem. Any new rules that the new type should
+follow can be added over the code that's already written, following the principle
+we learned during the course, that our code should be open for change through
+extensions, and not through deleting and changing written parts of the code,
+which can interfere with other logical elements in it.
+
+1. Different return types for methods could also be added to our code somewhat
+easily.
+First, we would have to add the allowed return types to our initializer, so that
+it would know the new legal signatures. After that, we would have to add a field
+for methods in our symbol table, which tells us what the expected return type
+of said method is. Using our symbol table, we have easy access to every variable's
+type, so we can simply verify that every return statement (which we already require
+now) includes a variable or a primitive of the correct return type.
+Also, we would have to make sure that assignment to variables from those methods
+is allowed only for variables of the correct type, which can also be done in a very
+similar fashion to the one we use now to verify that variables which are assigned
+with values from other variables actually match types.
+
+2. Using methods of standard java would be a little more work for our initializer.
+Methods of standard java actually work just like regular methods in our program
+in that they can be called anywhere during the code and have a signature which
+needs to be followed in order for the method to actually be invoked.
+All we would have to do in order to make that work is add those method names and
+signatures to our global symbol table during the initialization phase of our
+program, and from that point on, every call to those functions would be considered
+legal under the assumption that they were called with variables matching their
+signature, as needed.
+
+============
+Regex
+============
+Our most important regex in the program is the ADVANCE_REGEX:
+'.*'|".*"|[+-]?\d*\.*\d+|\w+|[|]{2}|&{2}|\S
+It contains all possible inputs for our tokenizer to take. The main difficulty
+with it was the need for it tokenize things that aren't in the SJava syntax, since our
+validation takes place in the compiler classes, and not in this one. We did that
+by making it take proper SJava tokens as they should come (such as &&, etc.), and
+every token that wasn't specifically defined is taken as is, one by one, and
+is handled afterwards.
+
+Another important regex is the varName regex:
+(^_+\w+|^[a-zA-Z]+\w*)
+This regex allows varNames to be exactly what they were defined to be in the project
+description, and also took some time for us to implement correctly.
+
+============
+Tests
+============
+test 1: Checks that final vars can't be changed.
+test 2: Checks that global vars and functions can be declared at any part of the code.
+test 3: Checks that we can handle multiple var decs at once.
+test 4: Checks that we can have variables with the same name in different scopes.
+test 5: Checks that we can't have two variable's with the same name in the same scope.
+test 6: Checks that we can handle different types of double declarations.
+test 7: Checks that we can handle multiple terms in an if/while statement.
+test 8: Checks that boolean can take all possible inputs.
+test 9: Checks we can change multiple variables in a single line.
+test 10: Checks we can't have variable names with reserved words.
+test 11: Checks we can't send uninitialized variable to a function.
+test 12: Checks we can return in the middle of the function.
+test 13: Checks that recursion is allowed.
+test 14: Checks we can't send function mismatching types.
+test 15: Checks we don't accept seperated line.
+test 16: Checks we don't allow functions with the same name.
+test 17: Checks we allow spaces and tabs.
+test 18: Checks that a variable from inner scope with the same name
+         as a final variable from outer scope can be changed.
+test 19: Checks that int can be sent as double.
+test 20: Checks that a boolean variable can take an int/double variable's value.

@@ -1,0 +1,11 @@
+// Checks that int can be sent as double
+
+void foo (double d) {
+return;
+}
+
+void boo() {
+int a =5;
+foo(a);
+return;
+}

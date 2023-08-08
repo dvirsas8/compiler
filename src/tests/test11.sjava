@@ -1,0 +1,12 @@
+// Checking we can't send uninitialized variable to a function
+
+void boo(int a) {
+a=1;
+return;
+}
+
+void foo() {
+int a;
+boo(a);
+return;
+}

@@ -1,0 +1,7 @@
+//Checking that final vars can't be changed
+final int a=0;
+
+void foo () {
+a=5;
+return;
+}

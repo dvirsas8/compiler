@@ -1,0 +1,10 @@
+// Checks we can't send function unmatching types
+
+void foo(int a) {
+return;
+}
+
+void boo(String s) {
+foo(s);
+return;
+}

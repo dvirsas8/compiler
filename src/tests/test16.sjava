@@ -1,0 +1,9 @@
+// Checks we don't allow functions with the same name
+
+void foo() {
+return;
+}
+
+void foo() {
+return;
+}

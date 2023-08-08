@@ -1,0 +1,6 @@
+// Checking we can change multiple variables in a single line
+
+void foo (int a, String b) {
+a=5, b ="hello";
+return;
+}

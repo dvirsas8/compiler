@@ -1,0 +1,7 @@
+// Checking that we can have variables with the same name in different scopes
+
+int a = 1;
+void foo () {
+String a = "hello";
+return;
+}

@@ -1,0 +1,4 @@
+// Checking we can't have variables with reserved words
+
+int String = 5;
+char char = 1;

@@ -1,0 +1,6 @@
+// Checks that recursion is allowed
+
+void foo() {
+foo();
+return;
+}

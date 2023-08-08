@@ -1,0 +1,13 @@
+// Checking that global vars and functions can be declared at any part of the code
+
+int a = 4;
+
+void foo() {
+return;
+}
+
+int b = 5;
+
+void boo() {
+return;
+}

@@ -1,0 +1,4 @@
+// Checks that we can't have two variable's with the same name in the same scope
+
+int a = -1;
+String a = "hello";

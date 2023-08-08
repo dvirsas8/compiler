@@ -1,0 +1,7 @@
+// Checks we allow spaces and tabs
+
+		int        a = 4        ;        
+void func         (              ) {    
+String       b =        "f";
+return;
+}

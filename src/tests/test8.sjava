@@ -1,0 +1,3 @@
+// Checking that boolean can take all possible inputs
+
+boolean a = true, c = false, d=-2, e = 1.3, j = -4.3;
